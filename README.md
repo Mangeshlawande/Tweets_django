@@ -64,3 +64,15 @@ static_url and static_root settings in settings.py file
        ...
    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
    ```
+
+   make model tweet in models.py file of tweets app
+   migrate the model
+   ```bash
+   python manage.py makemigrations tweets
+   python manage.py migrate
+    ```
+    register the model in admin.py file of tweets app
+
+    create forms.py file in tweets app for user registration and login forms
+
+    
