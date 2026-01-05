@@ -1,0 +1,38 @@
+# 1. Version Control
+.git/
+.gitignore
+
+# 2. Python-specific files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.pytest_cache/
+
+# 3. Django-specific files
+db.sqlite3
+/static/
+/media/
+
+# 4. Environment and secrets
+.env
+.env.*
+secrets.json
+
+# 5. Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 6. IDEs and OS-specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

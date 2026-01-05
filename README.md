@@ -77,3 +77,54 @@ static_url and static_root settings in settings.py file
 
     create views in views.py file of tweets app for registration , login , logout and tweet creation
 
+docker settings 
+- Create a `Dockerfile` in the root directory of your project:
+   ```Dockerfile
+   # Use an official Python runtime as a parent image
+   FROM python:3.9-slim
+
+   # Set the working directory in the container
+   WORKDIR /app
+
+   # Copy the current directory contents into the container at /app
+   COPY . /app
+
+   # Install any needed packages specified in requirements.txt
+   RUN pip install --no-cache-dir -r requirements.txt
+
+   # Make port 8000 available to the world outside this container
+   EXPOSE 8000
+
+   # Define environment variable
+   ENV DJANGO_SETTINGS_MODULE=myproject.settings
+
+   # Run the application
+   CMD ["python", "manage.py", "runserver", "0.0.0:8000"]
+   ```
+   cmd to build the docker image
+   ```bash
+   docker build -t my-django-app .
+    ```
+    cmd to run the docker container
+    ```bash
+    docker run -p 8000:8000 my-django-app
+     ```
+     
+    cmd to run the docker container with migrations
+    ```bash
+    docker run -p 8000:8000 my-django-app sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+     ```
+
+
+## Usage
+1. Access the application in your web browser at `http://localhost:8000/`.
+2. Use the registration form to create a new user account.
+3. Log in with your newly created account.
+4. Create and view tweets as an authenticated user.
+## Contributing
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes and commit them (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a pull request.

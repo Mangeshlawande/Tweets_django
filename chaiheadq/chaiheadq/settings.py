@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9qe=yh(pp4!l4y5(*q2vt#g-3@tuvy&85imd_madnuc1d1y)+%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -123,3 +123,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
+
+
+
+# settings.py
+LOGIN_URL = '/accounts/login/'
+
+LOGIN_REDIRECT_URL='/tweet/'
+
+LOGOUT_REDIRECT_URL='/tweet/'

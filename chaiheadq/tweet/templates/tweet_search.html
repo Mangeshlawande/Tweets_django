@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-5">Search Tweets</h2>
+
+    {% if tweets %}
+        <h3 class="mt-4">Search Results:</h3>
+        <ul class="list-group mt-3">
+            {% for tweet in tweets %}
+            <h5 class="card-title mb-1">{{tweet.user.username}}</h5>
+            <img src="{{ tweet.photo.url }}" class="card-img-top rounded" alt="Tweet Image">
+                <li class="list-group-item justify-content-between d-flex align-items-center mb-4">
+                    {{ tweet.text }}
+                   
+                    <small class="text-muted">{{ tweet.created_at|date:"F d, Y" }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif tweets is not None %}
+        <p class="mt-4 text-muted">No tweets found matching your search.</p>
+    {% endif %}
+</div>
+{% endblock %}
