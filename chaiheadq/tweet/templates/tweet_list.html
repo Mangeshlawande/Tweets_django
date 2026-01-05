@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title  %}
+    The Tweets Home
+{% endblock %}
+
+{% block content  %}
+
+    <h1 class="text-center text-white mt-4">
+        Welcome To Daddy's Home
+    </h1>
+    <a class='btn btn-primary mb-4' href="{%url 'tweet_create' %}">Create Tweet</a>
+    <div class="container row gap-3 ">
+        
+        {% for tweet  in tweets  %}
+        <div class="card" style="width: 18rem;">
+        {% if tweet.photo %}
+                <img src="{{ tweet.photo.url }}" class="card-img-top mt-3" alt="Tweet Image">
+        {% else %}
+            <p>No image available</p>
+        {% endif %}            
+                <div class="card-body">
+                <h5 class="card-title">{{tweet.user.username}}</h5>
+                <p class="card-text">{{tweet.text}}</p>
+                <a href="{%url 'tweet_edit' tweet.id %}" class="btn btn-primary">Edit</a>
+                <a href="{%url 'tweet_delete' tweet.id %}" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

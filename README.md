@@ -75,4 +75,5 @@ static_url and static_root settings in settings.py file
 
     create forms.py file in tweets app for user registration and login forms
 
-    
+    create views in views.py file of tweets app for registration , login , logout and tweet creation
+
