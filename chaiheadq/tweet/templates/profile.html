@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block title %}{{ profile_user.username }} · TweetBar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-7 mx-auto">
+
+        <!-- Banner + Avatar -->
+        <div class="profile-banner mb-0 position-relative"></div>
+        <div class="tweet-card p-4 mb-4" style="border-top-left-radius:0; border-top-right-radius:0;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div style="margin-top: -50px;">
+                    {% if profile_obj.avatar %}
+                        <img src="{{ profile_obj.avatar.url }}" class="avatar-lg border border-3 border-dark" alt="{{ profile_user.username }}">
+                    {% else %}
+                        <div class="avatar-lg avatar-placeholder border border-3 border-dark" style="font-size:2rem;">{{ profile_user.username|first|upper }}</div>
+                    {% endif %}
+                </div>
+                <div class="d-flex gap-2 mt-1">
+                    {% if user.is_authenticated %}
+                        {% if user == profile_user %}
+                            <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Edit Profile
+                            </a>
+                        {% else %}
+                            <a href="{% url 'follow_user' profile_user.username %}"
+                               class="btn btn-sm {% if is_following %}btn-secondary{% else %}btn-primary{% endif %}">
+                                {% if is_following %}<i class="bi bi-person-check-fill"></i> Following
+                                {% else %}<i class="bi bi-person-plus-fill"></i> Follow{% endif %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <h5 class="fw-bold mb-0">{{ profile_user.username }}</h5>
+                {% if profile_obj.bio %}<p class="text-secondary mt-1 mb-2">{{ profile_obj.bio }}</p>{% endif %}
+                <div class="d-flex gap-3 flex-wrap text-secondary small">
+                    {% if profile_obj.website %}
+                    <span><i class="bi bi-link-45deg"></i> <a href="{{ profile_obj.website }}" target="_blank" class="text-primary">{{ profile_obj.website }}</a></span>
+                    {% endif %}
+                    <span><i class="bi bi-calendar3"></i> Joined {{ profile_user.date_joined|date:"M Y" }}</span>
+                </div>
+                <div class="d-flex gap-4 mt-3">
+                    <span><strong class="text-white">{{ following_count }}</strong> <span class="text-secondary">Following</span></span>
+                    <span><strong class="text-white">{{ follower_count }}</strong> <span class="text-secondary">Followers</span></span>
+                    <span><strong class="text-white">{{ page_obj.paginator.count }}</strong> <span class="text-secondary">Tweets</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tweets -->
+        <h6 class="text-secondary mb-3">Tweets</h6>
+        {% for tweet in page_obj %}
+            {% include "tweet_card.html" %}
+        {% empty %}
+            <div class="text-center text-secondary py-5">
+                <i class="bi bi-chat-square fs-1"></i>
+                <p class="mt-3">No tweets yet.</p>
+            </div>
+        {% endfor %}
+
+        {% if page_obj.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let v = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return v;
+}
+function toggleLike(tweetId, btn) {
+    fetch(`/${tweetId}/like/`, {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken')}
+    }).then(r => r.json()).then(data => {
+        const icon = btn.querySelector('i');
+        const count = btn.querySelector('.like-count');
+        if (data.liked) { btn.classList.add('liked'); icon.className = 'bi bi-heart-fill'; }
+        else { btn.classList.remove('liked'); icon.className = 'bi bi-heart'; }
+        count.textContent = data.count;
+    }).catch(() => window.location.reload());
+}
+function toggleRetweet(tweetId, btn) {
+    fetch(`/${tweetId}/retweet/`, {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken')}
+    }).then(r => r.json()).then(data => {
+        const count = btn.querySelector('.retweet-count');
+        if (data.retweeted) btn.classList.add('retweeted');
+        else btn.classList.remove('retweeted');
+        count.textContent = data.count;
+    }).catch(() => window.location.reload());
+}
+</script>
+{% endblock %}

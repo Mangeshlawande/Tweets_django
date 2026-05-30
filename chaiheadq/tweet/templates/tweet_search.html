@@ -1,24 +1,94 @@
 {% extends "layout.html" %}
+{% block title %}Search · TweetBar{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="mt-5">Search Tweets</h2>
+<div class="row">
+    <div class="col-lg-7 mx-auto">
+        <h5 class="fw-bold mb-4"><i class="bi bi-search text-primary me-2"></i>Search</h5>
 
-    {% if tweets %}
-        <h3 class="mt-4">Search Results:</h3>
-        <ul class="list-group mt-3">
-            {% for tweet in tweets %}
-            <h5 class="card-title mb-1">{{tweet.user.username}}</h5>
-            <img src="{{ tweet.photo.url }}" class="card-img-top rounded" alt="Tweet Image">
-                <li class="list-group-item justify-content-between d-flex align-items-center mb-4">
-                    {{ tweet.text }}
-                   
-                    <small class="text-muted">{{ tweet.created_at|date:"F d, Y" }}</small>
-                </li>
+        <form method="get" class="d-flex gap-2 mb-4">
+            {{ form.query }}
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+        </form>
+
+        {% if request.GET.query %}
+            <!-- User results -->
+            {% if users %}
+            <h6 class="text-secondary mb-3">People</h6>
+            {% for u in users %}
+            <div class="tweet-card p-3 mb-2 d-flex align-items-center gap-3">
+                <a href="{% url 'profile' u.username %}">
+                    {% if u.profile.avatar %}
+                        <img src="{{ u.profile.avatar.url }}" class="avatar-sm" alt="{{ u.username }}">
+                    {% else %}
+                        <div class="avatar-sm avatar-placeholder">{{ u.username|first|upper }}</div>
+                    {% endif %}
+                </a>
+                <div class="flex-grow-1">
+                    <a href="{% url 'profile' u.username %}" class="fw-bold text-white text-decoration-none">{{ u.username }}</a>
+                    {% if u.profile.bio %}<p class="text-secondary small mb-0">{{ u.profile.bio|truncatewords:12 }}</p>{% endif %}
+                </div>
+                {% if user.is_authenticated and user != u %}
+                <a href="{% url 'follow_user' u.username %}" class="btn btn-sm btn-outline-primary">Follow</a>
+                {% endif %}
+            </div>
             {% endfor %}
-        </ul>
-    {% elif tweets is not None %}
-        <p class="mt-4 text-muted">No tweets found matching your search.</p>
-    {% endif %}
+            <hr class="border-secondary my-4">
+            {% endif %}
+
+            <!-- Tweet results -->
+            {% if tweets %}
+            <h6 class="text-secondary mb-3">Tweets</h6>
+            {% for tweet in tweets %}
+                {% include "tweet_card.html" %}
+            {% endfor %}
+            {% elif tweets is not None %}
+            <p class="text-secondary text-center py-4">No tweets found for "{{ request.GET.query }}"</p>
+            {% endif %}
+
+            {% if not tweets and not users %}
+            <div class="text-center text-secondary py-5">
+                <i class="bi bi-search fs-1"></i>
+                <p class="mt-3">No results for "{{ request.GET.query }}"</p>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let v = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if (c.startsWith(name + '=')) v = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return v;
+}
+function toggleLike(tweetId, btn) {
+    fetch(`/${tweetId}/like/`, {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken')}
+    }).then(r => r.json()).then(data => {
+        const icon = btn.querySelector('i');
+        const count = btn.querySelector('.like-count');
+        if (data.liked) { btn.classList.add('liked'); icon.className = 'bi bi-heart-fill'; }
+        else { btn.classList.remove('liked'); icon.className = 'bi bi-heart'; }
+        count.textContent = data.count;
+    }).catch(() => window.location.reload());
+}
+function toggleRetweet(tweetId, btn) {
+    fetch(`/${tweetId}/retweet/`, {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken')}
+    }).then(r => r.json()).then(data => {
+        const count = btn.querySelector('.retweet-count');
+        if (data.retweeted) btn.classList.add('retweeted');
+        else btn.classList.remove('retweeted');
+        count.textContent = data.count;
+    }).catch(() => window.location.reload());
+}
+</script>
 {% endblock %}

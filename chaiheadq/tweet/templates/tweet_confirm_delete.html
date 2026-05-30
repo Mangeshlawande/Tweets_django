@@ -1,18 +1,23 @@
 {% extends "layout.html" %}
-{% block title  %}
-    Tweets for Chai 
-{% endblock %}
+{% block title %}Delete Tweet · TweetBar{% endblock %}
 
 {% block content %}
-<h1 class="text-center text-white mt-4"> Do you want to delete the tweet ? </h1>
-
-<form action="" method="post">
-    {% csrf_token %}
-    <button class="btn btn-danger">Delete </button>
-    <a class='btn btn-success' href="{% url 'tweet_list'%}"> Cancel </a>
-
-</form>
-
+<div class="row">
+    <div class="col-lg-5 mx-auto">
+        <div class="tweet-card p-4 text-center">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+            <h5 class="fw-bold mb-2">Delete this tweet?</h5>
+            <p class="text-secondary mb-1">This action cannot be undone.</p>
+            <div class="tweet-card p-3 mb-4 text-start">
+                <small class="text-secondary">{{ tweet.user.username }} · {{ tweet.created_at|timesince }} ago</small>
+                <p class="mb-0 mt-1">{{ tweet.text }}</p>
+            </div>
+            <form method="post" class="d-flex gap-2 justify-content-center">
+                {% csrf_token %}
+                <a href="{% url 'tweet_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
-</body>
-</html> 

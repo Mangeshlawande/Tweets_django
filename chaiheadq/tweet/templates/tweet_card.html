@@ -1,0 +1,76 @@
+{% load static %}
+<div class="tweet-card p-3 mb-3" id="tweet-{{ tweet.id }}">
+
+    {% if tweet.parent %}
+    <div class="retweet-label mb-2">
+        <i class="bi bi-repeat"></i> <a href="{% url 'profile' tweet.user.username %}" class="text-decoration-none text-secondary">{{ tweet.user.username }}</a> retweeted
+    </div>
+    {% endif %}
+
+    <div class="d-flex gap-3">
+        <!-- Avatar -->
+        <a href="{% url 'profile' tweet.user.username %}" class="flex-shrink-0">
+            {% if tweet.user.profile.avatar %}
+                <img src="{{ tweet.user.profile.avatar.url }}" class="avatar-sm" alt="{{ tweet.user.username }}">
+            {% else %}
+                <div class="avatar-sm avatar-placeholder">{{ tweet.user.username|first|upper }}</div>
+            {% endif %}
+        </a>
+
+        <div class="flex-grow-1 min-width-0">
+            <!-- Header -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a href="{% url 'profile' tweet.user.username %}" class="fw-bold text-white text-decoration-none">{{ tweet.user.username }}</a>
+                <small class="text-secondary">· {{ tweet.created_at|timesince }} ago</small>
+                {% if tweet.parent %}
+                    <small class="text-secondary">· original by <a href="{% url 'profile' tweet.parent.user.username %}" class="text-secondary">@{{ tweet.parent.user.username }}</a></small>
+                {% endif %}
+            </div>
+
+            <!-- Text -->
+            <p class="mt-1 mb-2" style="word-break:break-word;">{{ tweet.text }}</p>
+
+            <!-- Photo -->
+            {% if tweet.photo %}
+                <img src="{{ tweet.photo.url }}" class="tweet-photo mb-2" alt="Tweet image">
+            {% endif %}
+
+            <!-- Action row -->
+            <div class="d-flex gap-3 align-items-center flex-wrap">
+                <!-- Like -->
+                <button class="btn btn-sm btn-outline-secondary btn-like {% if user.is_authenticated and tweet.is_liked_by(user) %}liked{% endif %}"
+                        data-tweet-id="{{ tweet.id }}"
+                        onclick="toggleLike({{ tweet.id }}, this)">
+                    <i class="bi {% if user.is_authenticated and tweet.is_liked_by(user) %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                    <span class="like-count">{{ tweet.like_count }}</span>
+                </button>
+
+                <!-- Comment -->
+                <a href="{% url 'tweet_detail' tweet.id %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-chat"></i> {{ tweet.comment_count }}
+                </a>
+
+                <!-- Retweet -->
+                {% if not tweet.parent %}
+                <button class="btn btn-sm btn-outline-secondary btn-retweet {% if user.is_authenticated and tweet.is_retweeted_by(user) %}retweeted{% endif %}"
+                        data-tweet-id="{{ tweet.id }}"
+                        onclick="toggleRetweet({{ tweet.id }}, this)">
+                    <i class="bi bi-repeat"></i>
+                    <span class="retweet-count">{{ tweet.retweet_count }}</span>
+                </button>
+                {% endif %}
+
+                <!-- Detail link -->
+                <a href="{% url 'tweet_detail' tweet.id %}" class="btn btn-sm btn-outline-secondary ms-auto">
+                    <i class="bi bi-arrow-up-right-square"></i>
+                </a>
+
+                <!-- Owner actions -->
+                {% if user == tweet.user %}
+                <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
