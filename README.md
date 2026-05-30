@@ -1,130 +1,48 @@
-# Tweets_django
-Q. Learn how to lock  the view .
-Q. Django built form 
-Q. How to Perform Custom user Registration
-Q. How to Perform Custom user login
-Q. How to Perform Custom user logout
+# TweetBar v2.0
 
-*Goal* : To Know  the flow of the framework and how to create a simple app using django framework.
-## Installation
-1. Install Python from [python.org](https://www.python.org/downloads/).
-2. Install Django using pip:
-   ```bash
-   pip install django
-   ```
-3. Create a new Django project:
-   ```bash
-   django-admin startproject myproject
-   ```
-4. Navigate to the project directory:
-   ```bash
-   cd myproject
-   ```      
-5. Create a new Django app:
-   ```bash
-   python manage.py startapp tweets
-   ```
-6. Add the app to the `INSTALLED_APPS` list in `settings.py`:
-   ```python
-   INSTALLED_APPS = [
-       ...,
-       'tweets',
-   ]
-   ```
-7. Create templates and static directories for your app.
-8. Set up URLs in `urls.py` to route to your app's views.       
-9. Run the development server:
-   ```bash
+A full-featured Django microblogging platform.
 
-   python manage.py makemigrations
-   python manage.py migrate
-   python manage.py runserver
-   ```
-10. create a superuser to access the admin panel:
-   ```bash
-   python manage.py createsuperuser
-   ```
-media_url and media_root settings in settings.py file
-  ```python
-  MEDIA_URL = '/media/'
-  MEDIA_ROOT = BASE_DIR / 'media'
-  ```
-11. In your project's main `urls.py`, add the following to serve media files during development:
-   ```python
+## Features
+- Post, edit, delete tweets with optional photo
+- Like / Unlike (AJAX, no page reload)
+- Comments with threaded view
+- Retweets (with undo)
+- User profiles (avatar, bio, website)
+- Follow / Unfollow users
+- Personal feed (tweets from followed users)
+- Notifications (likes, comments, follows, retweets)
+- Search (tweets + users)
+- Pagination everywhere
+- Dark theme UI (Bootstrap 5)
 
-static_url and static_root settings in settings.py file
-  ```python
-  STATIC_URL = '/static/'
-  STATIC_ROOT = BASE_DIR / 'staticfiles'
-  ```
-   from django.conf import settings
-   from django.conf.urls.static import static
+## Deploy to Railway
 
-   urlpatterns = [
-       ...
-   ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-   ```
+### 1. Set environment variables in Railway dashboard
+| Variable | Value |
+|---|---|
+| `SECRET_KEY` | Long random string (https://djecrety.ir) |
+| `DEBUG` | `False` |
 
-   make model tweet in models.py file of tweets app
-   migrate the model
-   ```bash
-   python manage.py makemigrations tweets
-   python manage.py migrate
-    ```
-    register the model in admin.py file of tweets app
+Railway auto-injects `PORT` and `RAILWAY_PUBLIC_DOMAIN`.
 
-    create forms.py file in tweets app for user registration and login forms
+### 2. Deploy
+```bash
+railway login
+railway link
+railway up
+```
 
-    create views in views.py file of tweets app for registration , login , logout and tweet creation
+### 3. Create superuser (after first deploy)
+```bash
+railway run python manage.py createsuperuser
+```
 
-docker settings 
-- Create a `Dockerfile` in the root directory of your project:
-   ```Dockerfile
-   # Use an official Python runtime as a parent image
-   FROM python:3.9-slim
+## Local development
+```bash
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
 
-   # Set the working directory in the container
-   WORKDIR /app
-
-   # Copy the current directory contents into the container at /app
-   COPY . /app
-
-   # Install any needed packages specified in requirements.txt
-   RUN pip install --no-cache-dir -r requirements.txt
-
-   # Make port 8000 available to the world outside this container
-   EXPOSE 8000
-
-   # Define environment variable
-   ENV DJANGO_SETTINGS_MODULE=myproject.settings
-
-   # Run the application
-   CMD ["python", "manage.py", "runserver", "0.0.0:8000"]
-   ```
-   cmd to build the docker image
-   ```bash
-   docker build -t my-django-app .
-    ```
-    cmd to run the docker container
-    ```bash
-    docker run -p 8000:8000 my-django-app
-     ```
-     
-    cmd to run the docker container with migrations
-    ```bash
-    docker run -p 8000:8000 my-django-app sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-
-     ```
-
-
-## Usage
-1. Access the application in your web browser at `http://localhost:8000/`.
-2. Use the registration form to create a new user account.
-3. Log in with your newly created account.
-4. Create and view tweets as an authenticated user.
-## Contributing
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes and commit them (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a pull request.
+Visit http://127.0.0.1:8000

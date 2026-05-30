@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block title %}{% if form.instance.pk %}Edit Tweet{% else %}New Tweet{% endif %} · TweetBar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="tweet-card p-4">
+            <h5 class="mb-4 fw-bold">
+                {% if form.instance.pk %}
+                    <i class="bi bi-pencil-square text-warning me-2"></i>Edit Tweet
+                {% else %}
+                    <i class="bi bi-plus-square text-primary me-2"></i>Compose Tweet
+                {% endif %}
+            </h5>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">What's happening?</label>
+                    {{ form.text }}
+                    <div class="d-flex justify-content-end mt-1">
+                        <span class="char-counter" id="charCounter">280</span>
+                    </div>
+                    {% if form.text.errors %}
+                        <div class="text-danger small mt-1">{{ form.text.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Photo (optional)</label>
+                    {{ form.photo }}
+                    {% if form.instance.photo %}
+                        <div class="mt-2">
+                            <img src="{{ form.instance.photo.url }}" style="max-height:150px; border-radius:8px;" alt="Current photo">
+                            <p class="text-secondary small mt-1">Current photo — upload a new one to replace it.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{% if form.instance.pk %}{% url 'tweet_detail' form.instance.pk %}{% else %}{% url 'tweet_list' %}{% endif %}"
+                       class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if form.instance.pk %}Save Changes{% else %}Post Tweet{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const textarea = document.getElementById('tweetText');
+const counter  = document.getElementById('charCounter');
+if (textarea && counter) {
+    function updateCounter() {
+        const remaining = 280 - textarea.value.length;
+        counter.textContent = remaining;
+        counter.className = 'char-counter';
+        if (remaining <= 20) counter.classList.add('warning');
+        if (remaining <= 0)  counter.classList.add('danger');
+    }
+    textarea.addEventListener('input', updateCounter);
+    updateCounter();
+}
+</script>
+{% endblock %}

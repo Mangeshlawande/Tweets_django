@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Sign Up · TweetBar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5 col-lg-4 mx-auto">
+        <div class="tweet-card p-4">
+            <div class="text-center mb-4">
+                <i class="bi bi-twitter-x text-primary" style="font-size:2.5rem;"></i>
+                <h4 class="fw-bold mt-2">Join TweetBar today</h4>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            </form>
+
+            <hr class="border-secondary my-4">
+            <p class="text-center text-secondary mb-0">
+                Already have an account? <a href="{% url 'login' %}" class="text-primary">Log in</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
